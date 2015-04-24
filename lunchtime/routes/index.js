@@ -1,10 +1,7 @@
 ﻿var express = require('express');
 var router = express.Router();
-var request = require('request');
 var _ = require('underscore');
-var slack = require('../slack');
 var db = require('../database');
-var levenshtein = require('fast-levenshtein');
 
 var config = require('../config.js');
 
