@@ -1,0 +1,48 @@
+﻿extends layout
+
+block content
+  .col-md-4
+    h1 Raygun Lunchtime
+    hr
+
+    if errorOccurred
+        .alert.alert-danger Well that didn't work!
+
+    h2 Current choices
+    ul.list-group
+      - for (var i in data)
+        - var choice = data[i]
+        li.list-group-item(data-id=choice.id, class=choice.winner ? "list-group-item-success" : "")
+          span.js-choicename= choice.name
+          span.badge.votebadge.js-voteforchoice= choice.votes
+
+  .modal.fade#modal
+    .modal-dialog
+      .modal-content
+        form(method='post', action='/vote')
+          .modal-header
+           button.close(type='button', data-dismiss='modal')
+             span &times;
+            h4.modal-title Submit your vote
+          .modal-body
+            p You are voting for:&nbsp;
+              span.js-choice
+            .form-group
+              label(for='token') Your token:
+              input.form-control(name='token')
+            input.js-choiceid(type='hidden', name='voteid')
+          .modal-footer
+            button.btn.btn-primary(data-dismiss='modal') Cancel
+            button.btn.btn-primary(type='submit') Submit
+
+  script(type='text/javascript').
+    $(document).ready(function(){
+      $('.js-voteforchoice').on('click', function() {
+        var li = $(this).parent();
+        var id = $(li).data('id');
+        var name = $(li).find('.js-choicename').html();
+        $('.modal .js-choiceid').val(id);
+        $('.modal .js-choice').html(name);
+        $('#modal').modal();
+      });
+    });
