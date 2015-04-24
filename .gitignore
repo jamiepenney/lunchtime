@@ -4,8 +4,10 @@
 
 *.suo
 .ntvs_analysis.dat.tmp
+.deploy-temp
 
 config.js
+_deploy.sh
 
 choices.db/
 obj/
