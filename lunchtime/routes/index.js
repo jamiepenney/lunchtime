@@ -24,8 +24,9 @@ router.get('/', function (req, res) {
         title: 'Raygun Lunchtime',
         data: data,
         errorOccurred: errorOccurred,
+        token: req.signedCookies.token
       });
-    })
+    });
   });
 });
 
@@ -45,7 +46,7 @@ router.post('/vote', function (req, res) {
   }
 
   db.getVotes(function(votes) {
-    if (_.find(votes, function (v) { return v.user === user.user })) {
+    if (_.find(votes, function (v) { return v.user === user.user; })) {
       setTimeout(function () {
         res.status(400).send("You can't vote twice!").end();
       }, 1000);
@@ -58,6 +59,8 @@ router.post('/vote', function (req, res) {
         return;
       }
       
+      // Store the token in the user's cookies for next week
+      res.cookie('token', token, { signed: true });
       res.redirect('/');
     });
   });
