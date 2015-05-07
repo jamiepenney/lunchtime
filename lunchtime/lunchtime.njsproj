@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="choices.js" />
     <Compile Include="config.js" />
     <Compile Include="database.js" />
     <Compile Include="Gruntfile.js" />
@@ -44,7 +45,6 @@
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />
     <Content Include="public\css\vendor\compiled.css" />
-    <Content Include="README.md" />
     <Content Include="VERSION" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />

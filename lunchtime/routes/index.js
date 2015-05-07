@@ -4,6 +4,7 @@ var _ = require('underscore');
 var db = require('../database');
 
 var config = require('../config.js');
+var choices = require('../choices.js');
 
 
 router.get('/', function (req, res) {
@@ -13,7 +14,7 @@ router.get('/', function (req, res) {
 
     db.getWinner(function (err, winner){
 
-      var data = _.map(config.choices, function (c) {
+      var data = _.map(choices.list, function (c) {
         var votesFor = _.filter(votes, function (v) { return v.vote == c.id; })
         c.votes = votesFor.length;
         c.winner = !!winner && c.id == winner;

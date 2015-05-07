@@ -3,6 +3,7 @@ var db = require('./database');
 var slack = require('./slack');
 var _ = require('underscore');
 var config = require('./config');
+var choices = require('./choices');
 
 module.exports = function (grunt) {
 
@@ -33,16 +34,15 @@ module.exports = function (grunt) {
     var done = this.async();
 
     db.getVotes(function (votes) {
-      var choices;
       if (votes.length === 0) {
         grunt.log.fail("No votes!");
         done();
-        return
+        return;
       } else {
         var index = Math.floor(Math.random() * votes.length);
         
         var choiceid = votes[index].vote;
-        var choice = _.find(config.choices, function (c) { return c.id == choiceid });
+        var choice = _.find(choices.list, function (c) { return c.id == choiceid });
 
         slack.broadcast("The lunch destination has been chosen: " + choice.name, function (err) {
           if (err) {
@@ -75,7 +75,7 @@ module.exports = function (grunt) {
     });
   });
 
-  grunt.registerTask('sendToken', 'Sends token and instrctions to a user', function () {
+  grunt.registerTask('sendToken', 'Sends token and instrctions to a user', function() {
     var done = this.async();
     var user = grunt.option('user');
 
@@ -84,11 +84,11 @@ module.exports = function (grunt) {
       return;
     }
 
-    var configUser = _.find(config.users, function (u) { return u.user == user; });
+    var configUser = _.find(config.users, function(u) { return u.user == user; });
     if (!configUser) {
       grunt.log.error('Couldn\'t find that user');
       return;
     }
-    slack.directMessage('Here\s your http://lunch.jamiepenney.co.nz token: `'+configUser.token+'`', configUser.slackUsername, done);
-  })
+    slack.directMessage('Here\s your http://lunch.jamiepenney.co.nz token: `' + configUser.token + '`', configUser.slackUsername, done);
+  });
 };
