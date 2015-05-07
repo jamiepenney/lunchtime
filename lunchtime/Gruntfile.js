@@ -44,7 +44,7 @@ module.exports = function (grunt) {
         var choiceid = votes[index].vote;
         var choice = _.find(config.choices, function (c) { return c.id == choiceid });
 
-        slack.send("The lunch destination has been chosen: " + choice.name, function (err) {
+        slack.broadcast("The lunch destination has been chosen: " + choice.name, function (err) {
           if (err) {
             grunt.log.fail(err);
             done();
@@ -62,10 +62,10 @@ module.exports = function (grunt) {
     });
 
   });
-  
+
   grunt.registerTask('reminder', 'Sends the lunch reminder to Slack', function () {
     var done = this.async();
-    slack.send("Reminder: Vote for your choice for this week's lunch at http://lunch.jamiepenney.co.nz", function (err) {
+    slack.broadcast("Reminder: Vote for your choice for this week's lunch at http://lunch.jamiepenney.co.nz", function (err) {
       if (err) {
         grunt.log.fail(err);
       } else {
@@ -74,4 +74,21 @@ module.exports = function (grunt) {
       done();
     });
   });
+
+  grunt.registerTask('sendToken', 'Sends token and instrctions to a user', function () {
+    var done = this.async();
+    var user = grunt.option('user');
+
+    if (!user) {
+      grunt.log.error('specify a --user');
+      return;
+    }
+
+    var configUser = _.find(config.users, function (u) { return u.user == user; });
+    if (!configUser) {
+      grunt.log.error('Couldn\'t find that user');
+      return;
+    }
+    slack.directMessage('Here\s your http://lunch.jamiepenney.co.nz token: `'+configUser.token+'`', configUser.slackUsername, done);
+  })
 };

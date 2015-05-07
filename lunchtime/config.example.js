@@ -1,6 +1,7 @@
 ﻿module.exports = {
   round: '1',
   slackUrl: 'https://hooks.slack.com/services/THISISNOTAREALSLACKWEBHOOKURL',
+  slackRoom: '#testing',
   users: [
     { user: 'Alex', token: 'AAAA' },
     { user: 'Jamie', token: 'BBBB' },
