@@ -8,7 +8,6 @@
     { id: 6, name: 'Sushi Train' },
     { id: 7, name: 'Tulsi - Curry' },
     { id: 8, name: 'Aroy - Thai' },
-    { id: 9, name: 'The Oaks Noodle House' },
-    { id: 10, name: 'ANOTHER OPTION' }
+    { id: 9, name: 'The Oaks Noodle House' }
   ]
 }
