@@ -79,5 +79,6 @@ module.exports = {
   addVote: addVote,
   setWinner: setWinner,
   getWinner: getWinner,
+  getCurrentRound: getCurrentRound,
   incrementCurrentRound: incrementCurrentRound
 }

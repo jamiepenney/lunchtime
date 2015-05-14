@@ -10,22 +10,30 @@ var choices = require('../choices.js');
 router.get('/', function (req, res) {
   var errorOccurred = !!req.query.error;
 
-  db.getVotes(function (votes) {
+  db.getCurrentRound(function(err, currentRound) {
+    db.getVotes(function(votes) {
 
-    db.getWinner(function (err, winner){
+      db.getWinner(function(err, winner) {
 
-      var data = _.map(choices.list, function (c) {
-        var votesFor = _.filter(votes, function (v) { return v.vote == c.id; })
-        c.votes = votesFor.length;
-        c.winner = !!winner && c.id == winner;
-        return c;
-      });
+        var data = _.chain(choices.list)
+        .filter(function (c) {
+          // skip choices added in a future round or removed in a round before this one.
+          return (!c.addedIn || c.addedIn <= currentRound)
+              && (!c.removedIn || c.removedIn >= currentRound);
+          })
+        .map(function (c) {
+          var votesFor = _.filter(votes, function(v) { return v.vote == c.id; });
+          c.votes = votesFor.length;
+          c.winner = !!winner && c.id == winner;
+          return c;
+        }).value();
 
-      res.render('index', {
-        title: 'Raygun Lunchtime',
-        data: data,
-        errorOccurred: errorOccurred,
-        token: req.signedCookies.token
+        res.render('index', {
+          title: 'Raygun Lunchtime',
+          data: data,
+          errorOccurred: errorOccurred,
+          token: req.signedCookies.token
+        });
       });
     });
   });
