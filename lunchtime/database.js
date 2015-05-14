@@ -4,38 +4,72 @@ var _ = require('underscore');
 
 var config = require('./config.js');
 
-var voteKey = 'votes' + config.round;
-var winnerKey = 'winner' + config.round;
+var roundKey = 'currentround';
+var voteKey = function(next) { getCurrentRound(function(err, val) { next(err, 'votes' + val); }); };
+var winnerKey = function (next) { getCurrentRound(function (err, val) { next(err, 'winner' + val); }); };
+
+var getCurrentRound = function(next) {
+  db.get(roundKey, function(err, value) {
+    if (err) {
+      next(err);
+    } else {
+      next(err, +value); //coerce round to a number
+    }
+  });
+};
+
+var incrementCurrentRound = function (next) {
+  getCurrentRound(function (err, round) {
+    if (err) {
+      next(err);
+    } else {
+      db.set(roundKey, round + 1, next);
+    }
+  });
+}
 
 var getVotes = function (next) {
-  db.lrange(voteKey, 0, -1, function (err, values) {
-    var votes;
+  voteKey(function (err, key) {
+    if (err) return next(err);
 
-    if (err) votes = [];
-    else {
-      votes = _.map(values, function (v) { return JSON.parse(v); });
-    }
-    next(votes);
+    return db.lrange(key, 0, -1, function(err, values) {
+      var votes;
+
+      if (err) votes = [];
+      else {
+        votes = _.map(values, function(v) { return JSON.parse(v); });
+      }
+      next(votes);
+    });
   });
 };
 
 var addVote = function (vote, next) {
-  db.rpush([voteKey, JSON.stringify(vote)], function (err) {
-    next(err);
+  voteKey(function (err, key) {
+    if (err) return next(err);
+    return db.rpush([key, JSON.stringify(vote)], function (err) {
+      next(err);
+    });
   });
 };
 
 var setWinner = function (winner, next) {
-  db.set(winnerKey, winner, next);
+  winnerKey(function(err, key) {
+    if (err) return next(err);
+    return db.set(key, winner, next);
+  });
 };
 
 var getWinner = function (next) {
-  db.get(winnerKey, function (err, value) {
-    if (err) {
-      next(err);
-    } else {
-      next(err, +value); //coerce winner value to number
-    }
+  winnerKey(function(err, key) {
+    if (err) return next(err);
+    return db.get(key, function(err, value) {
+      if (err) {
+        next(err);
+      } else {
+        next(err, +value); //coerce winner value to number
+      }
+    });
   });
 }
 
@@ -44,5 +78,6 @@ module.exports = {
   getVotes: getVotes,
   addVote: addVote,
   setWinner: setWinner,
-  getWinner: getWinner
+  getWinner: getWinner,
+  incrementCurrentRound: incrementCurrentRound
 }

@@ -30,6 +30,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.registerTask('default', ['bower_concat', 'uglify:bower']);
+  grunt.registerTask('increment-round', 'Moves to the next round of votes', function () {
+    var done = this.async();
+    db.incrementCurrentRound(done);
+  });
   grunt.registerTask('chooser', 'Chooses the lunch destination for this week', function () {
     var done = this.async();
 
