@@ -1,7 +1,7 @@
 ﻿module.exports = {
   list: [
     { id: 1, name: 'Rogue and Vagabond - Pizza' },
-    { id: 2, name: 'Southern Cross' },
+    { id: 2, name: 'Southern Cross', removedIn: 6 },
     { id: 3, name: 'Burger Fuel' },
     { id: 4, name: 'R & S Satay House' },
     { id: 5, name: 'Ekim Burger' },
