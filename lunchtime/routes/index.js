@@ -31,6 +31,7 @@ router.get('/', function (req, res) {
         res.render('index', {
           title: 'Raygun Lunchtime',
           data: data,
+          round: currentRound,
           errorOccurred: errorOccurred,
           token: req.signedCookies.token
         });

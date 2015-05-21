@@ -8,7 +8,7 @@ block content
     if errorOccurred
         .alert.alert-danger Well that didn't work!
 
-    h2 Current choices
+    h2= 'Current choices (Round ' + round + ')'
     ul.list-group
       - for (var i in data)
         - var choice = data[i]
