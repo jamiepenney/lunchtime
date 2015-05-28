@@ -9,6 +9,7 @@
     { id: 7, name: 'Tulsi - Curry' },
     { id: 8, name: 'Aroy - Thai' },
     { id: 9, name: 'The Oaks Noodle House' },
-    { id: 10, name: 'Little Penang', addedIn: 6 }
+    { id: 10, name: 'Little Penang', addedIn: 6 },
+    { id: 11, name: 'JJ Murphy\'s', addedIn: 6 }
   ]
 }
