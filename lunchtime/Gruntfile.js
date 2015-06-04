@@ -43,18 +43,31 @@ module.exports = function (grunt) {
         done();
         return;
       } else {
-        var index = Math.floor(Math.random() * votes.length);
+        var choiceid;
+        var choiceMessage;
+        // check largest vote for large majority
+        var majority = _.chain(votes).countBy(function (v) { return v.vote; }).pairs().max(function (arr) { return arr[1]; }).value();
+        // More than 75% majority
+        if (majority[1] > (votes.length * 0.75)) {
+          choiceid = majority[0];
+          choiceMessage = "by >75% majority";
+          grunt.log.writeln(majority);
+        } else {
+          // Otherwise pick randomly
+          var index = Math.floor(Math.random() * votes.length);
 
-        var choiceid = votes[index].vote;
+          choiceid = votes[index].vote;
+          choiceMessage = "randomly";
+        }
         var choice = _.find(choices.list, function (c) { return c.id == choiceid });
 
-        slack.broadcast("The lunch destination has been chosen: " + choice.name, function (err) {
+        slack.broadcast("The lunch destination has been chosen " + choiceMessage + ": " + choice.name, function (err) {
           if (err) {
             grunt.log.fail(err);
             done();
           } else {
             db.setWinner(choiceid, function (err) {
-              grunt.log.write("The lunch destination has been chosen: " + choice.name);
+              grunt.log.write("The lunch destination has been chosen " + choiceMessage + ": " + choice.name);
               if (err) {
                 grunt.log.warn("Couldn't set the winner: " + err);
               }
