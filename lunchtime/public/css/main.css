@@ -1,3 +1,7 @@
-﻿.votebadge {
+﻿body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.votebadge {
   cursor: pointer;
 }
