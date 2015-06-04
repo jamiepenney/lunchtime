@@ -44,7 +44,7 @@ module.exports = function (grunt) {
         return;
       } else {
         var index = Math.floor(Math.random() * votes.length);
-        
+
         var choiceid = votes[index].vote;
         var choice = _.find(choices.list, function (c) { return c.id == choiceid });
 
@@ -64,7 +64,26 @@ module.exports = function (grunt) {
         });
       }
     });
+  });
 
+  grunt.registerTask('showvotes', 'Shows this week\'s votes', function () {
+    var done = this.async();
+
+    db.getVotes(function (votes) {
+      if (votes.length === 0) {
+        grunt.log.ok("No votes!");
+        done();
+        return;
+      } else {
+        grunt.log.ok(votes.length + " votes cast");
+        for (var index = 0; index < votes.length; index++) {
+          var vote = votes[index];
+          var choice = _.find(choices.list, function (c) { return c.id == vote.vote });
+          grunt.log.ok(vote.user + " voted for " + choice.name);
+        }
+        done();
+      }
+    });
   });
 
   grunt.registerTask('reminder', 'Sends the lunch reminder to Slack', function () {
