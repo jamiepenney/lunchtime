@@ -1,12 +1,19 @@
 ﻿doctype html
 html
   head
-    title Raygun Lunchtime
+    title= title
     link(rel='stylesheet', href='/css/vendor/compiled.css')
-    link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,600', rel='stylesheet', type='text/css')
+    link(href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700', rel='stylesheet', type='text/css')
     link(rel='stylesheet', href='/css/main.css')
     meta(name="viewport", content="width=device-width, initial-scale=1")
     script(src='/js/vendor/compiled.js')
   body
     .container
-        block content
+      .row
+        .col-md-8.col-md-offset-2
+          .module
+            .module-header
+              h1= title
+      .row
+        .col-md-8.col-md-offset-2
+          block content

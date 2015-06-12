@@ -1,7 +1,56 @@
 ﻿body {
   font-family: 'Open Sans', sans-serif;
+  background: #f0f3f8;
+}
+.module {
+  background: #fff;
+  border: 1px solid #d7e0e9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  margin-bottom: 24px;
+}
+
+.module-header {
+  border-bottom: 1px solid #f0f3f8;
+  padding: 0 24px 12px;
+}
+
+.module-footer {
+  border-top: 1px solid #f0f3f8;
+  padding: 0 24px 0;
+}
+
+.module-footer-title {
+  font-weight: 300;
+}
+
+.module-body {
+  padding: 0 24px;
+}
+
+.module-header + .module-body {
+  margin-top: 10px;
+}
+
+.sub-module-split {
+  margin: 10px -24px;
 }
 
 .votebadge {
   cursor: pointer;
+}
+
+.stats-label {
+  font-weight: 600;
+}
+
+.table-form-hack {
+  margin-top: -10px;
+}
+
+.table-form-hack th:first-child, .table-form-hack td:first-child {
+  padding-left: 0;
+}
+
+.table-form-hack th:last-child, .table-form-hack td:last-child {
+  padding-right: 0;
 }

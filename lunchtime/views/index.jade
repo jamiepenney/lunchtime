@@ -1,21 +1,22 @@
 ﻿extends layout
 
 block content
-  .col-md-6
-    h1 Raygun Lunchtime
-    hr
-
-    if errorOccurred
+  if errorOccurred
+    .module
+      .module-body
         .alert.alert-danger Well that didn't work!
-
-    h2 Current choices
-      small(style=)= ' Round ' + round
-    ul.list-group
-      - for (var i in data)
-        - var choice = data[i]
-        li.list-group-item(data-id=choice.id, class=choice.winner ? "list-group-item-success" : "")
-          span.js-choicename= choice.name
-          span.badge.votebadge.js-voteforchoice= choice.votes
+  .module
+    .module-header
+      h2 Make your choice
+    .module-body
+      ul.list-group
+        - for (var i in data)
+          - var choice = data[i]
+          li.list-group-item(data-id=choice.id, class=choice.winner ? "list-group-item-success" : "")
+            span.js-choicename= choice.name
+            span.badge.votebadge.js-voteforchoice= choice.votes
+    .module-footer
+      h4.module-footer-title= ' Round ' + round
 
   .modal.fade#modal
     .modal-dialog
