@@ -21,14 +21,16 @@ block content
             span.stats-label Most popular:
           .col-sm-9= round.popular
         hr.sub-module-split
-        table.table.table-form-hack
+        table.table.table-hover.table-form-hack
           thead
             tr
               th.col-sm-3 Name
               th Vote
+              th
           tbody
             - for (var userIndex in round.users)
               - var user = round.users[userIndex]
               tr
                 td= user.name
                 td= user.choice
+                td= user.winner ? 'winner' : ''

@@ -36,7 +36,12 @@ var getVotesByKey = function(key, next) {
 
     if (err) votes = [];
     else {
-      votes = _.map(values, function(v) { return JSON.parse(v); });
+      votes = _.map(values, function(v) {
+        var vote = JSON.parse(v);
+        // coerce vote number to fix bad data
+        vote.vote = +vote.vote;
+        return vote;
+      });
     }
     next(votes);
   });
@@ -50,7 +55,7 @@ var getVotesByRound = function (round, next) {
 var getVotes = function (next) {
   voteKey(function(err, key) {
     if (err) return next(err);
-    getVotesByKey(key, next);
+    return getVotesByKey(key, next);
   });
 };
 

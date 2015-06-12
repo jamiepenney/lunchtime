@@ -23,9 +23,9 @@ router.get('/', function (req, res) {
               && (!c.removedIn || c.removedIn >= currentRound);
           })
         .map(function (c) {
-          var votesFor = _.filter(votes, function(v) { return v.vote == c.id; });
+          var votesFor = _.filter(votes, function(v) { return v.vote === c.id; });
           c.votes = votesFor.length;
-          c.winner = !!winner && c.id == winner;
+          c.winner = !!winner && c.id === winner;
           return c;
         }).value();
 
@@ -43,7 +43,7 @@ router.get('/', function (req, res) {
 
 var mapVoteToChoice = function(vote) {
   var choice = _.find(choices.list, function(ch) {
-     return ch.id == vote;
+     return ch.id === vote;
   });
   return !!choice ? choice.name : 'Unknown';
 }
@@ -59,8 +59,9 @@ router.get('/stats', function (req, res) {
           var usersData = _.map(votes, function(vote) {
             return {
               name: vote.user,
-              choice: mapVoteToChoice(vote.vote)
-            };
+              choice: mapVoteToChoice(vote.vote),
+              winner: winner === vote.vote
+          };
           });
           var popular = _.chain(votes).countBy(function(v) { return v.vote; }).pairs().max(function(arr) { return arr[1]; }).value()[0];
           return cb(null, {
@@ -83,7 +84,7 @@ router.get('/stats', function (req, res) {
 
 router.post('/vote', function (req, res) {
   var token = req.body.token.trim().toUpperCase();
-  var voteid = req.body.voteid;
+  var voteid = +req.body.voteid;
 
   var users = config.users;
 
