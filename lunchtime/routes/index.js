@@ -1,6 +1,7 @@
 ﻿var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
+var async = require('async');
 var db = require('../database');
 
 var config = require('../config.js');
@@ -35,6 +36,46 @@ router.get('/', function (req, res) {
           errorOccurred: errorOccurred,
           token: req.signedCookies.token
         });
+      });
+    });
+  });
+});
+
+var mapVoteToChoice = function(vote) {
+  var choice = _.find(choices.list, function(ch) {
+     return ch.id == vote;
+  });
+  return !!choice ? choice.name : 'Unknown';
+}
+router.get('/stats', function (req, res) {
+  db.getCurrentRound(function(err, currentRound) {
+    var rounds = _.range(1, currentRound+1);
+    async.mapSeries(rounds, function(round, cb) {
+      db.getVotesByRound(round, function(votes) {
+        db.getWinnerByRound(round, function (err, winner) {
+          if (err) {
+            return cb({ users: [], round: round, winner: 0 });
+          }
+          var usersData = _.map(votes, function(vote) {
+            return {
+              name: vote.user,
+              choice: mapVoteToChoice(vote.vote)
+            };
+          });
+          var popular = _.chain(votes).countBy(function(v) { return v.vote; }).pairs().max(function(arr) { return arr[1]; }).value()[0];
+          return cb(null, {
+            users: usersData,
+            round: round,
+            winner: mapVoteToChoice(winner),
+            popular: mapVoteToChoice(popular)
+          });
+        });
+      });
+    }, function(err, results) {
+      res.render('stats', {
+        title: 'Raygun Lunchtime Stats',
+        rounds: results,
+        error: err
       });
     });
   });

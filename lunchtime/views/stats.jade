@@ -1,0 +1,34 @@
+﻿extends layout
+
+block content
+  if error
+    .module
+      .module-body
+        .alert.alert-danger= JSON.stringify(error)
+
+  -for (var roundIndex in rounds)
+    - var round = rounds[roundIndex]
+    .module
+      .module-header
+        h2= 'Round ' + round.round
+      .module-body
+        .row
+          .col-sm-3
+            span.stats-label Winner:
+          .col-sm-9= round.winner
+        .row
+          .col-sm-3
+            span.stats-label Most popular:
+          .col-sm-9= round.popular
+        hr.sub-module-split
+        table.table.table-form-hack
+          thead
+            tr
+              th.col-sm-3 Name
+              th Vote
+          tbody
+            - for (var userIndex in round.users)
+              - var user = round.users[userIndex]
+              tr
+                td= user.name
+                td= user.choice
