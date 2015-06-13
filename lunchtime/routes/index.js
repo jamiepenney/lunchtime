@@ -49,7 +49,7 @@ var mapVoteToChoice = function(vote) {
 }
 router.get('/stats', function (req, res) {
   db.getCurrentRound(function(err, currentRound) {
-    var rounds = _.range(1, currentRound+1);
+    var rounds = _.range(currentRound, 0, -1);
     async.mapSeries(rounds, function(round, cb) {
       db.getVotesByRound(round, function(votes) {
         db.getWinnerByRound(round, function (err, winner) {
