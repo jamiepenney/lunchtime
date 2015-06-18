@@ -11,5 +11,6 @@
     { id: 9, name: 'The Oaks Noodle House' },
     { id: 10, name: 'Little Penang', addedIn: 6 },
     { id: 11, name: 'JJ Murphy\'s', addedIn: 6 }
+    { id: 12, name: 'Ram\'s dumplings', addedIn: 10 }
   ]
 }
