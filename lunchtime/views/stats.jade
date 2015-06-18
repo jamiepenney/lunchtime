@@ -6,6 +6,22 @@ block content
       .module-body
         .alert.alert-danger= JSON.stringify(error)
 
+  .module
+    .module-header
+      h2= 'Number Of Wins'
+    .module-body
+      table.table.table-hover.table-form-hack
+        thead
+          tr
+            th.col-sm-3 Name
+            th # of wins
+        tbody
+          - for (var userName in userWins)
+            - var wins = userWins[userName]
+            tr
+              td= userName
+              td= wins
+
   -for (var roundIndex in rounds)
     - var round = rounds[roundIndex]
     .module

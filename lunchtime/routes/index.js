@@ -47,35 +47,53 @@ var mapVoteToChoice = function(vote) {
   });
   return !!choice ? choice.name : 'Unknown';
 }
+
+var getRoundData = function(round, votes, winner) {
+  var usersData = _.map(votes, function(vote) {
+    return {
+      name: vote.user,
+      choice: mapVoteToChoice(vote.vote),
+      winner: winner === vote.vote
+    };
+  });
+  var popular = _.chain(votes).countBy(function(v) { return v.vote; }).pairs().max(function(arr) { return arr[1]; }).value()[0];
+  return {
+    users: usersData,
+    round: round,
+    winner: mapVoteToChoice(winner),
+    popular: mapVoteToChoice(+popular)
+  };
+};
+
+var getNumberOfWins = function(results) {
+  var userWins = {};
+  _.forEach(results, function(result) {
+    _.forEach(result.users, function (user) {
+      if (user.winner) {
+        userWins[user.name] = (userWins[user.name] || 0) + 1;
+      }
+    });
+  });
+  return userWins;
+}
+
 router.get('/stats', function (req, res) {
   db.getCurrentRound(function(err, currentRound) {
-    var rounds = _.range(currentRound, 0, -1);
-    async.mapSeries(rounds, function(round, cb) {
+    var roundRange = _.range(currentRound, 0, -1);
+    async.mapSeries(roundRange, function(round, cb) {
       db.getVotesByRound(round, function(votes) {
         db.getWinnerByRound(round, function (err, winner) {
           if (err) {
             return cb({ users: [], round: round, winner: 0 });
           }
-          var usersData = _.map(votes, function(vote) {
-            return {
-              name: vote.user,
-              choice: mapVoteToChoice(vote.vote),
-              winner: winner === vote.vote
-          };
-          });
-          var popular = _.chain(votes).countBy(function(v) { return v.vote; }).pairs().max(function(arr) { return arr[1]; }).value()[0];
-          return cb(null, {
-            users: usersData,
-            round: round,
-            winner: mapVoteToChoice(winner),
-            popular: mapVoteToChoice(popular)
-          });
+          return cb(null, getRoundData(round, votes, winner));
         });
       });
-    }, function(err, results) {
+    }, function (err, results) {
       res.render('stats', {
         title: 'Raygun Lunchtime Stats',
         rounds: results,
+        userWins: getNumberOfWins(results),
         error: err
       });
     });
