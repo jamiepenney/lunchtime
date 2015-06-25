@@ -47,4 +47,8 @@ block content
         $('.modal .js-choice').html(name);
         $('#modal').modal();
       });
+      $('button[type=submit]').on('click', function() {
+        $(this).prop("disabled", true);
+        $(this).closest('form').submit();
+      });
     });
