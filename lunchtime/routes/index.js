@@ -67,6 +67,9 @@ var getRoundData = function(round, votes, winner) {
 
 var getNumberOfWins = function(results) {
   var userWins = {};
+  _.forEach(config.users, function(u) {
+    userWins[u.user] = 0;
+  });
   _.forEach(results, function(result) {
     _.forEach(result.users, function (user) {
       if (user.winner) {
@@ -74,7 +77,10 @@ var getNumberOfWins = function(results) {
       }
     });
   });
-  return userWins;
+
+  return _.chain(userWins).map(function(wins, name) {
+    return { wins: wins, name: name };
+  }).sortBy('wins').reverse().value();
 }
 
 router.get('/stats', function (req, res) {

@@ -16,11 +16,11 @@ block content
             th.col-sm-3 Name
             th # of wins
         tbody
-          - for (var userName in userWins)
-            - var wins = userWins[userName]
+          - for (var index in userWins)
+            - var user = userWins[index]
             tr
-              td= userName
-              td= wins
+              td= user.name
+              td= user.wins
 
   -for (var roundIndex in rounds)
     - var round = rounds[roundIndex]
