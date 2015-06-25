@@ -84,23 +84,26 @@ var getNumberOfWins = function(results) {
 }
 
 router.get('/stats', function (req, res) {
-  db.getCurrentRound(function(err, currentRound) {
-    var roundRange = _.range(currentRound, 0, -1);
-    async.mapSeries(roundRange, function(round, cb) {
-      db.getVotesByRound(round, function(votes) {
-        db.getWinnerByRound(round, function (err, winner) {
-          if (err) {
-            return cb({ users: [], round: round, winner: 0 });
-          }
-          return cb(null, getRoundData(round, votes, winner));
+  db.getCurrentRound(function (err, currentRound) {
+    db.getWinnerByRound(currentRound, function(err, winner) {
+      var latestRound = winner !== 0 ? currentRound : currentRound - 1;
+      var roundRange = _.range(latestRound, 0, -1);
+      async.mapSeries(roundRange, function(round, cb) {
+        db.getVotesByRound(round, function(votes) {
+          db.getWinnerByRound(round, function(err, winner) {
+            if (err) {
+              return cb({ users: [], round: round, winner: 0 });
+            }
+            return cb(null, getRoundData(round, votes, winner));
+          });
         });
-      });
-    }, function (err, results) {
-      res.render('stats', {
-        title: 'Raygun Lunchtime Stats',
-        rounds: results,
-        userWins: getNumberOfWins(results),
-        error: err
+      }, function(err, results) {
+        res.render('stats', {
+          title: 'Raygun Lunchtime Stats',
+          rounds: results,
+          userWins: getNumberOfWins(results),
+          error: err
+        });
       });
     });
   });
