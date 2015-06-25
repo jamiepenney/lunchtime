@@ -51,7 +51,6 @@ module.exports = function (grunt) {
         if (majority[1] > (votes.length * 0.75)) {
           choiceid = majority[0];
           choiceMessage = "by >75% majority";
-          grunt.log.writeln(majority);
         } else {
           // Otherwise pick randomly
           var index = Math.floor(Math.random() * votes.length);
