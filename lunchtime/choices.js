@@ -8,8 +8,9 @@
     { id: 6, name: 'Sushi Train' },
     { id: 7, name: 'Tulsi - Curry' },
     { id: 8, name: 'Aroy - Thai' },
-    { id: 9, name: 'The Oaks Noodle House' },
-    { id: 10, name: 'Little Penang', addedIn: 6 },
-    { id: 11, name: 'JJ Murphy\'s', addedIn: 6 }
+    { id: 9, name: 'The Oaks Noodle House - Thai' },
+    { id: 10, name: 'Little Penang - Malaysian', addedIn: 6 },
+    { id: 11, name: 'JJ Murphy\'s - Pub', addedIn: 6 },
+    { id: 12, name: 'Auntie Meena\'s - Vegetarian', addedIn: 10 }
   ]
 }
