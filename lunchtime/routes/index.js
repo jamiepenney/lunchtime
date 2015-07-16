@@ -84,9 +84,11 @@ var getNumberOfWins = function(results) {
 }
 
 router.get('/stats', function (req, res) {
+  var token = req.signedCookies.token;
+  var isAdmin = _.any(config.users, function(u) { return u.token === token && u.isAdmin; });
   db.getCurrentRound(function (err, currentRound) {
     db.getWinnerByRound(currentRound, function(err, winner) {
-      var latestRound = winner !== 0 ? currentRound : currentRound - 1;
+      var latestRound = isAdmin || winner !== 0 ? currentRound : currentRound - 1;
       var roundRange = _.range(latestRound, 0, -1);
       async.mapSeries(roundRange, function(round, cb) {
         db.getVotesByRound(round, function(votes) {
