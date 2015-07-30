@@ -12,6 +12,8 @@
     { id: 10, name: 'Little Penang - Malaysian', addedIn: 6 },
     { id: 11, name: 'JJ Murphy\'s - Pub', addedIn: 6 },
     { id: 12, name: 'Auntie Meena\'s - Vegetarian', addedIn: 10 },
-    { id: 13, name: 'Ram\'s dumplings', addedIn: 10 }
+    { id: 13, name: 'Ram\'s dumplings', addedIn: 10 },
+    { id: 14, name: 'Heaven Pizza', addedIn: 15 },
+    { id: 15, name: 'Pizza Pomodoro at Goldings', addedIn: 15 }
   ]
 }
