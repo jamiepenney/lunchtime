@@ -47,10 +47,10 @@ module.exports = function (grunt) {
         var choiceMessage;
         // check largest vote for large majority
         var majority = _.chain(votes).countBy(function (v) { return v.vote; }).pairs().max(function (arr) { return arr[1]; }).value();
-        // More than 75% majority
-        if (majority[1] > (votes.length * 0.75)) {
+        // More than 2/3rds majority
+        if (majority[1] > (votes.length * 2 / 3)) {
           choiceid = majority[0];
-          choiceMessage = "by >75% majority";
+          choiceMessage = "by >2/3rds majority";
         } else {
           // Otherwise pick randomly
           var index = Math.floor(Math.random() * votes.length);
