@@ -142,6 +142,7 @@ router.post('/vote', function (req, res) {
       
       // Store the token in the user's cookies for next week
       res.cookie('token', token, { signed: true });
+      res.cookie('username', user.user, { signed: true });
       res.redirect('/');
     });
   });

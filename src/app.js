@@ -5,7 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var raygun = require('raygun');
+
 var routes = require('./routes/index');
+var config = require('./config.js');
 
 var app = express();
 
@@ -39,6 +42,32 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
+
+// Raygun
+var raygunClient = new raygun.Client().init({ apiKey: config.raygunApiKey });
+
+// User tracking
+raygunClient.user = function(req){
+  var token = req.signedCookies.token;
+  var username = req.signedCookies.username;
+  return {
+    isAnonymous: !token,
+    identifier: token || "",
+    fullName: username
+  };
+};
+
+
+app.use(function(err, req, res, next) {
+  if(err){
+    raygunClient.send(err, {}, function() {
+      next(err);
+    }, req);
+  }
+  else {
+    next(err);
+  }
+});
 
 // development error handler
 // will print stacktrace

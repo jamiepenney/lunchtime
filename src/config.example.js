@@ -4,5 +4,6 @@
   users: [
     { user: 'Alex', token: 'AAAA' },
     { user: 'Jamie', token: 'BBBB' },
-  ]
+  ],
+  raygunApiKey: 'THISISNTAREALKEY'
 };
