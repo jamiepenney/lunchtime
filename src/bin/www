@@ -1,9 +1,24 @@
 ﻿#!/usr/bin/env node
 var debug = require('debug')('lunchtime');
-var app = require('../app');
+var config = require('../config.js');
+var raygun = require('raygun');
+var domain = require('domain');
 
-app.set('port', process.env.PORT || 8777);
 
-var server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
+var raygunClient = new raygun.Client().init({ apiKey: config.raygunApiKey });
+
+var d = domain.create();
+d.on('error', function(err) {
+  raygunClient.send(err, {}, function() {
+    console.log('Uncaught exception: ' + err);
+    process.exit(1);
+  }, null, ['domain_error']);
+});
+
+d.run(function(){
+  var app = require('../app');
+  app.set('port', process.env.PORT || 8777);
+  var server = app.listen(app.get('port'), function() {
+      debug('Express server listening on port ' + server.address().port);
+  });
 });
