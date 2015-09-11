@@ -1,0 +1,9 @@
+CREATE ROLE lunchtime LOGIN PASSWORD 'EXAMPLE PASSWORD';
+
+CREATE DATABASE lunchtime 
+  WITH ENCODING='UTF8'
+       OWNER=lunchtime
+       CONNECTION LIMIT=-1;
+
+GRANT ALL ON DATABASE lunchtime TO lunchtime;
+REVOKE ALL ON DATABASE lunchtime FROM public;
