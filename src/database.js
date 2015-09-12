@@ -1,103 +1,221 @@
-﻿var redis = require('redis');
-var db = redis.createClient();
-var _ = require('underscore');
+﻿var config = require('./config.js');
+var pg = require('pg');
+var fs = require('fs');
+var path = require('path');
 
-var config = require('./config.js');
+pg.defaults.user = config.pg.user;
+pg.defaults.password = config.pg.password;
+pg.defaults.database = config.pg.database;
+pg.defaults.host = config.pg.host;
 
-var roundKey = 'currentround';
-var voteKeyStr = 'votes';
-var winnerKeyStr = 'winner';
-var voteKey = function(next) { getCurrentRound(function(err, val) { next(err, voteKeyStr + val); }); };
-var winnerKey = function (next) { getCurrentRound(function (err, val) { next(err, winnerKeyStr + val); }); };
+pg.on('notice', function(msg) {
+  console.log("notice: %j", msg);
+});
+
+pg.on('error', function(msg) {
+  console.log("error: %j", msg);
+});
 
 var getCurrentRound = function(next) {
-  db.get(roundKey, function(err, value) {
-    if (err) {
-      next(err);
-    } else {
-      next(err, +value); //coerce round to a number
-    }
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    
+    var query = 'select * from "round" where is_current = TRUE order by id desc limit 1';
+    client.query({text: query}, function(err, result) {
+      next(err, result.rows[0]);
+    });
   });
 };
 
 var incrementCurrentRound = function (next) {
-  getCurrentRound(function (err, round) {
-    if (err) {
-      next(err);
-    } else {
-      db.set(roundKey, round + 1, next);
-    }
-  });
-}
-
-var getVotesByKey = function(key, next) {
-  return db.lrange(key, 0, -1, function(err, values) {
-    var votes;
-
-    if (err) votes = [];
-    else {
-      votes = _.map(values, function(v) {
-        var vote = JSON.parse(v);
-        // coerce vote number to fix bad data
-        vote.vote = +vote.vote;
-        return vote;
-      });
-    }
-    next(votes);
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var query = 'update round set is_current=FALSE;\n' + 
+                'insert into round(is_current) VALUES(TRUE) returning id;';
+    client.query({text: query}, function(err, result){
+      next(err, result != null ? result.rows[0] : {});
+    });
   });
 };
 
-var getVotesByRound = function (round, next) {
-  var key = voteKeyStr + round;
-  return getVotesByKey(key, next);
+var getChoicesForRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getChoicesForRound.sql'), 'utf-8');
+var getChoicesForRound = function(round, next) {
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var values = [round];
+    	client.query({text: getChoicesForRoundQuery, values: values}, function(err, result){
+		    next(err, result.rows);
+        done();
+  	});
+  });
 };
 
+var getVotesByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getVotesByRound.sql'), 'utf-8');
+var getVotesByRound = function(round, next) {
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var values = [round];
+    	client.query({text: getVotesByRoundQuery, values: values}, function(err, result){
+		    next(err, result.rows);
+        done();
+  	});
+  });
+};
+
+var getVotesQuery = fs.readFileSync(path.join(__dirname, 'database/getVotes.sql'), 'utf-8');
 var getVotes = function (next) {
-  voteKey(function(err, key) {
-    if (err) return next(err);
-    return getVotesByKey(key, next);
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    	client.query({text: getVotesQuery}, function(err, result){
+		    next(err, result != null ? result.rows : []);
+        done();
+  	});
   });
 };
 
 var addVote = function (vote, next) {
-  voteKey(function (err, key) {
-    if (err) return next(err);
-    return db.rpush([key, JSON.stringify(vote)], function (err) {
-      next(err);
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    getCurrentRound(function(err, round){
+      if(err) { done(); return next(err); }
+      var query = 'insert into vote(round_id, choice_id, user_id)\n'+
+                  'values($1, $2, $3) RETURNING *';
+      var values = [round.id, vote.choice_id, vote.user_id];           
+      client.query({text: query, values: values}, function(err, result){
+        next(err, result != null ? result.rows[0] : {});
+        done();
+      });
     });
   });
 };
 
 var setWinner = function (winner, next) {
-  winnerKey(function(err, key) {
-    if (err) return next(err);
-    return db.set(key, winner, next);
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    getCurrentRound(function(err, round){
+      if(err) { done(); return next(err); }
+      var query = 'update round set winning_vote_id = $1, winning_choice_id = $2 where id = $3';
+      var values = [winner.vote_id, winner.choice_id, round.id];           
+      client.query({text: query, values: values}, function(err, result){
+        next(err, {});
+        done();
+      });
+    })
   });
 };
 
-var getWinnerByRound = function (round, next) {
-  return getWinnerByKey(winnerKeyStr + round, next);
-}
-
-var getWinnerByKey = function(key, next) {
-  return db.get(key, function (err, value) {
-    if (err) {
-      next(err);
-    } else {
-      next(err, +value); //coerce winner value to number
-    }
+var getFavouriteByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getFavouriteByRound.sql'), 'utf-8');
+var getFavouriteByRound = function (round, next) {
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var values = [round];
+    client.query({text: getFavouriteByRoundQuery, values: values}, function(err, result){
+      next(err, result.rows[0]);
+      done();
+  	});
   });
 }
 
+var getWinnerByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getWinnerByRound.sql'), 'utf-8');
+var getWinnerByRound = function (round, next) {
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var values = [round];
+    client.query({text: getWinnerByRoundQuery, values: values}, function(err, result){
+      next(err, result.rows[0]);
+      done();
+  	});
+  });
+}
+
+var getWinnerQuery = fs.readFileSync(path.join(__dirname, 'database/getWinner.sql'), 'utf-8');
 var getWinner = function (next) {
-  winnerKey(function(err, key) {
-    if (err) return next(err);
-    return getWinnerByKey(key, next);
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    client.query({text: getWinnerQuery}, function(err, result){
+      next(err, result.rows[0].winning_choice_id);
+      done();
+  	});
+  });
+}
+
+var getUserByToken = function(token, next){
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var query = 'select * from "user" where token = $1 limit 1';
+    var values = [token];
+    client.query({text: query, values: values}, function(err, result){
+      next(err, result.rows[0]);
+      done();
+  	});
+  });
+};
+
+var getUserByName = function(name, next){
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var query = 'select * from "user" where name = $1 limit 1';
+    var values = [name];
+    client.query({text: query, values: values}, function(err, result){
+      next(err, result.rows[0]);
+      done();
+  	});
+  });
+};
+
+
+var getWinsForEachUserQuery = fs.readFileSync(path.join(__dirname, 'database/getWinsForEachUser.sql'), 'utf-8');
+var getWinsForEachUser = function(next){
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    client.query({text: getWinsForEachUserQuery}, function(err, result){
+      next(err, result.rows);
+      done();
+  	});
+  });
+};
+
+var getStatsForRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getStatsForRound.sql'), 'utf-8');
+var getStatsForRound = function(round, next){
+  pg.connect(function queryStats(err, client, done) {
+    if(err) { done(); return next(err); }
+    var values = [round];
+    client.query({text: getStatsForRoundQuery, values: values}, function(err, result){
+      if (err) { done(); return next(err); }
+      var stats = result.rows;
+      
+      getWinnerByRound(round, function(err, winner) {
+        if (err) { done(); return next(err); }
+        else {
+          getFavouriteByRound(round, function(err, favourite){
+            if (err) { done(); return next(err); }
+            done();
+            next(null, {users: stats, round: round, winner: winner.name, popular: favourite.name});
+          });
+        }
+      });
+  	});
+  });
+};
+
+var getChoice = function (choice, next) {
+  pg.connect(function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var query = 'select * from choice where id = $1 limit 1;';
+    var values = [choice];
+    client.query({text: query, values: values}, function(err, result){
+      next(err, result.rows[0]);
+      done();
+  	});
   });
 }
 
 module.exports = {
-  db: db,
+  getStatsForRound: getStatsForRound,
+  getChoice: getChoice,
+  getWinsForEachUser: getWinsForEachUser,
+  getUserByToken: getUserByToken,
+  getChoicesForRound: getChoicesForRound,
   getVotes: getVotes,
   getVotesByRound: getVotesByRound,
   addVote: addVote,

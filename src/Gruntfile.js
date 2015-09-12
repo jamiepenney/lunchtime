@@ -3,7 +3,6 @@ var db = require('./database');
 var slack = require('./slack');
 var _ = require('underscore');
 var config = require('./config');
-var choices = require('./choices');
 
 module.exports = function (grunt) {
 
@@ -37,35 +36,42 @@ module.exports = function (grunt) {
   grunt.registerTask('chooser', 'Chooses the lunch destination for this week', function () {
     var done = this.async();
 
-    db.getVotes(function (votes) {
+    db.getVotes(function (err, votes) {
+      if(err) {
+        grunt.log.fail(err);
+        done();
+        return;
+      }
       if (votes.length === 0) {
         grunt.log.fail("No votes!");
         done();
         return;
       } else {
-        var choiceid;
+        var choice;
         var choiceMessage;
+        var vote_id;
         // check largest vote for large majority
         var majority = _.chain(votes).countBy(function (v) { return v.vote; }).pairs().max(function (arr) { return arr[1]; }).value();
         // More than 2/3rds majority
         if (majority[1] > (votes.length * 2 / 3)) {
-          choiceid = majority[0];
+          var c = _.first(votes, function(v) { return v.vote === majority[0]; });
+          choice = { id: c.vote, name: c.choice_name};
           choiceMessage = "by >2/3rds majority";
         } else {
           // Otherwise pick randomly
           var index = Math.floor(Math.random() * votes.length);
 
-          choiceid = votes[index].vote;
+          choice = { id: votes[index].vote, name: votes[index].choice_name};
+          vote_id = votes[index].id;
           choiceMessage = "randomly";
         }
-        var choice = _.find(choices.list, function (c) { return c.id == choiceid });
 
         slack.broadcast("The lunch destination has been chosen " + choiceMessage + ": " + choice.name, function (err) {
           if (err) {
             grunt.log.fail(err);
             done();
           } else {
-            db.setWinner(choiceid, function (err) {
+            db.setWinner({vote_id: vote_id, choice_id: choice.id}, function (err) {
               grunt.log.write("The lunch destination has been chosen " + choiceMessage + ": " + choice.name);
               if (err) {
                 grunt.log.warn("Couldn't set the winner: " + err);
@@ -74,26 +80,6 @@ module.exports = function (grunt) {
             });
           }
         });
-      }
-    });
-  });
-
-  grunt.registerTask('showvotes', 'Shows this week\'s votes', function () {
-    var done = this.async();
-
-    db.getVotes(function (votes) {
-      if (votes.length === 0) {
-        grunt.log.ok("No votes!");
-        done();
-        return;
-      } else {
-        grunt.log.ok(votes.length + " votes cast");
-        for (var index = 0; index < votes.length; index++) {
-          var vote = votes[index];
-          var choice = _.find(choices.list, function (c) { return c.id == vote.vote });
-          grunt.log.ok(vote.user + " voted for " + choice.name);
-        }
-        done();
       }
     });
   });
@@ -110,20 +96,22 @@ module.exports = function (grunt) {
     });
   });
 
-  grunt.registerTask('sendToken', 'Sends token and instrctions to a user', function() {
+  grunt.registerTask('sendToken', 'Sends token and instructions to a user', function() {
     var done = this.async();
-    var user = grunt.option('user');
+    var username = grunt.option('user');
 
-    if (!user) {
+    if (!username) {
       grunt.log.error('specify a --user');
       return;
     }
-
-    var configUser = _.find(config.users, function(u) { return u.user == user; });
-    if (!configUser) {
-      grunt.log.error('Couldn\'t find that user');
-      return;
-    }
-    slack.directMessage('Here\s your http://lunch.jamiepenney.co.nz token: `' + configUser.token + '`', configUser.slackUsername, done);
+    
+    db.getUserByName(username, function(err, user){
+      if (!user) {
+        grunt.log.error('Couldn\'t find that user');
+        done();
+        return;
+      }
+      slack.directMessage('Here\'s your http://lunch.jamiepenney.co.nz token: `' + user.token + '`', user.slack_username, done);
+    });
   });
 };

@@ -5,5 +5,11 @@
     { user: 'Alex', token: 'AAAA' },
     { user: 'Jamie', token: 'BBBB' },
   ],
-  raygunApiKey: 'THISISNTAREALKEY'
+  raygunApiKey: 'THISISNTAREALKEY',
+  pg: {
+    user: 'lunchtime',
+    password: 'Password1',
+    database: 'lunchtime',
+    host: '127.0.0.1'
+  }
 };

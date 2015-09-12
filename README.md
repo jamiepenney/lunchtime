@@ -2,7 +2,7 @@
 The Raygun Lunch bot
 
 ## Requirements:
-* Redis, running on localhost with the default port
+* Postgres, running on localhost with the default port
 * nodejs
 * a config.js file (example provided in the repo)
 
@@ -14,15 +14,14 @@ The Raygun Lunch bot
 For the Slack integration to work, you need to set `slackUrl` to a Slack Webhook URL,
 and `slackRoom` to a room or channel name with a hash in front of it.
 
-The `users` array has your users and their tokens - each entry in the array should be
-an object with a `user` and `token` property, set to strings. The tokens need to be
-unique - you can't give two users the same token.
+## Choices
 
-## Choices - choices.js
-
-This file has the available choices in it. Each choice is an object with an id property,
+The `choice` table has the available choices in it. Each choice is an id
 and a name (this is what is displayed to the user). The ids should be unique, and
 shouldn't change over time. Add new choices rather than editing or removing old ones.
 If you don't want a choice to show up yet or until after a certain round, you can use the
-`addedIn` and `removedIn` properties to skip those choices. `addedIn` is the first round
-that a choice should appear in, and `removedIn` is the last one it appeared in.
+`added_in` and `removed_in` properties to skip those choices. `added_in` is the first round
+that a choice should appear in, and `removed_in` is the last one it appeared in.
+
+To add or remove choices, you should run them in a migration script - see the `db-migrations`
+folder for examples. 
