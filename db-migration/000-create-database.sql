@@ -6,4 +6,3 @@ CREATE DATABASE lunchtime
        CONNECTION LIMIT=-1;
 
 GRANT ALL ON DATABASE lunchtime TO lunchtime;
-REVOKE ALL ON DATABASE lunchtime FROM public;
