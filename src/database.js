@@ -23,6 +23,7 @@ var getCurrentRound = function(next) {
     var query = 'select * from "round" where is_current = TRUE order by id desc limit 1';
     client.query({text: query}, function(err, result) {
       next(err, result.rows[0]);
+      done();
     });
   });
 };
@@ -34,6 +35,7 @@ var incrementCurrentRound = function (next) {
                 'insert into round(is_current) VALUES(TRUE) returning id;';
     client.query({text: query}, function(err, result){
       next(err, result != null ? result.rows[0] : {});
+      done();
     });
   });
 };
@@ -189,8 +191,9 @@ var getStatsForRound = function(round, next){
         else {
           getFavouriteByRound(round, function(err, favourite){
             if (err) { done(); return next(err); }
-            done();
+            
             next(null, {users: stats, round: round, winner: winner.name, popular: favourite.name});
+            done();
           });
         }
       });
