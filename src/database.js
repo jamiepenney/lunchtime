@@ -193,7 +193,8 @@ var getStatsForRound = function(round, next){
             if (err) { done(); return next(err); }
             
             var winnerName = winner ? winner.name : "";
-            next(null, {users: stats, round: round, winner: winnerName, popular: favourite.name});
+            var favName = favourite ? favourite.name : "";
+            next(null, {users: stats, round: round, winner: winnerName, popular: favName});
             done();
           });
         }
