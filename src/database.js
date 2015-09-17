@@ -192,7 +192,8 @@ var getStatsForRound = function(round, next){
           getFavouriteByRound(round, function(err, favourite){
             if (err) { done(); return next(err); }
             
-            next(null, {users: stats, round: round, winner: winner.name, popular: favourite.name});
+            var winnerName = winner ? winner.name : "";
+            next(null, {users: stats, round: round, winner: winnerName, popular: favourite.name});
             done();
           });
         }
