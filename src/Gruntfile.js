@@ -54,7 +54,7 @@ module.exports = function (grunt) {
         var majority = _.chain(votes).countBy(function (v) { return v.vote; }).pairs().max(function (arr) { return arr[1]; }).value();
         // More than 2/3rds majority
         if (majority[1] > (votes.length * 2 / 3)) {
-          var c = _.first(votes, function(v) { return v.vote === majority[0]; });
+          var c = _.find(votes, function(v) { return v.vote == majority[0]; });
           choice = { id: c.vote, name: c.choice_name};
           choiceMessage = "by >2/3rds majority";
         } else {
