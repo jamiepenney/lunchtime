@@ -46,7 +46,7 @@ block content
           tbody
             - for (var userIndex in round.users)
               - var user = round.users[userIndex]
-              tr(class=choice.vote_winner ? "success" : "")
+              tr(class=user.vote_winner ? "success" : "")
                 td= user.name
                 td= user.choice
                 td= user.winner ? 'winner' : ''
