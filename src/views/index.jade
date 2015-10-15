@@ -16,7 +16,7 @@ block content
             span.js-choicename= choice.name
             span.badge.votebadge.js-voteforchoice= choice.votes
     .module-footer
-      h4.module-footer-title= ' Round ' + round
+      h4.module-footer-title= 'Round ' + round + (!winner ? ": Winner drawn at 11am" : "")
 
   .modal.fade#modal
     .modal-dialog

@@ -18,6 +18,7 @@ router.get('/', function (req, res) {
             title: 'Raygun Lunchtime',
             data: choices,
             round: currentRound.id,
+            winner: winner,
             errorOccurred: errorOccurred,
             token: req.signedCookies.token
           });
