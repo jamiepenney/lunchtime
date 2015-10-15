@@ -3,7 +3,7 @@
 	INSERT INTO "user"(id, name, token, is_admin)
 	VALUES
 	(1, 'Alex', 'AAAAAAAA', FALSE),
-	(2, 'Kyle', 'BBBBBBBB', FALSE),;
+	(2, 'Kyle', 'BBBBBBBB', FALSE);
 
 	INSERT INTO "round"(id, winning_choice_id)
 	VALUES  (1, 1),(2, NULL);
