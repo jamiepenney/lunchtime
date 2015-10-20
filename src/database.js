@@ -3,10 +3,7 @@ var pg = require('pg');
 var fs = require('fs');
 var path = require('path');
 
-pg.defaults.user = config.pg.user;
-pg.defaults.password = config.pg.password;
-pg.defaults.database = config.pg.database;
-pg.defaults.host = config.pg.host;
+var cfg = config.pg;
 
 pg.on('notice', function(msg) {
   console.log("notice: %j", msg);
@@ -17,7 +14,7 @@ pg.on('error', function(msg) {
 });
 
 var getCurrentRound = function(next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     
     var query = 'select * from "round" where is_current = TRUE order by id desc limit 1';
@@ -29,7 +26,7 @@ var getCurrentRound = function(next) {
 };
 
 var incrementCurrentRound = function (next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var query = 'update round set is_current=FALSE;\n' + 
                 'insert into round(is_current) VALUES(TRUE) returning id;';
@@ -42,7 +39,7 @@ var incrementCurrentRound = function (next) {
 
 var getChoicesForRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getChoicesForRound.sql'), 'utf-8');
 var getChoicesForRound = function(round, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
     	client.query({text: getChoicesForRoundQuery, values: values}, function(err, result){
@@ -54,7 +51,7 @@ var getChoicesForRound = function(round, next) {
 
 var getVotesByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getVotesByRound.sql'), 'utf-8');
 var getVotesByRound = function(round, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
     	client.query({text: getVotesByRoundQuery, values: values}, function(err, result){
@@ -66,7 +63,7 @@ var getVotesByRound = function(round, next) {
 
 var getVotesQuery = fs.readFileSync(path.join(__dirname, 'database/getVotes.sql'), 'utf-8');
 var getVotes = function (next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     	client.query({text: getVotesQuery}, function(err, result){
 		    next(err, result != null ? result.rows : []);
@@ -76,7 +73,7 @@ var getVotes = function (next) {
 };
 
 var addVote = function (vote, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     getCurrentRound(function(err, round){
       if(err) { done(); return next(err); }
@@ -92,7 +89,7 @@ var addVote = function (vote, next) {
 };
 
 var setWinner = function (winner, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     getCurrentRound(function(err, round){
       if(err) { done(); return next(err); }
@@ -108,7 +105,7 @@ var setWinner = function (winner, next) {
 
 var getFavouriteByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getFavouriteByRound.sql'), 'utf-8');
 var getFavouriteByRound = function (round, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
     client.query({text: getFavouriteByRoundQuery, values: values}, function(err, result){
@@ -120,7 +117,7 @@ var getFavouriteByRound = function (round, next) {
 
 var getWinnerByRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getWinnerByRound.sql'), 'utf-8');
 var getWinnerByRound = function (round, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
     client.query({text: getWinnerByRoundQuery, values: values}, function(err, result){
@@ -132,7 +129,7 @@ var getWinnerByRound = function (round, next) {
 
 var getWinnerQuery = fs.readFileSync(path.join(__dirname, 'database/getWinner.sql'), 'utf-8');
 var getWinner = function (next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     client.query({text: getWinnerQuery}, function(err, result){
       next(err, result.rows[0].winning_choice_id);
@@ -142,7 +139,7 @@ var getWinner = function (next) {
 }
 
 var getUserByToken = function(token, next){
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var query = 'select * from "user" where token = $1 limit 1';
     var values = [token];
@@ -154,7 +151,7 @@ var getUserByToken = function(token, next){
 };
 
 var getUserByName = function(name, next){
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var query = 'select * from "user" where name = $1 limit 1';
     var values = [name];
@@ -168,7 +165,7 @@ var getUserByName = function(name, next){
 
 var getWinsForEachUserQuery = fs.readFileSync(path.join(__dirname, 'database/getWinsForEachUser.sql'), 'utf-8');
 var getWinsForEachUser = function(next){
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     client.query({text: getWinsForEachUserQuery}, function(err, result){
       next(err, result.rows);
@@ -179,7 +176,7 @@ var getWinsForEachUser = function(next){
 
 var getStatsForRoundQuery = fs.readFileSync(path.join(__dirname, 'database/getStatsForRound.sql'), 'utf-8');
 var getStatsForRound = function(round, next){
-  pg.connect(function queryStats(err, client, done) {
+  pg.connect(cfg, function queryStats(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
     client.query({text: getStatsForRoundQuery, values: values}, function(err, result){
@@ -204,7 +201,7 @@ var getStatsForRound = function(round, next){
 };
 
 var getChoice = function (choice, next) {
-  pg.connect(function(err, client, done) {
+  pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var query = 'select * from choice where id = $1 limit 1;';
     var values = [choice];
