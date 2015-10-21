@@ -86,7 +86,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('reminder', 'Sends the lunch reminder to Slack', function () {
     var done = this.async();
-    slack.broadcast("Reminder: Vote for your choice for this week's lunch at http://lunch.jamiepenney.co.nz", function (err) {
+    slack.broadcast("Reminder: Vote for your choice for this week's lunch at http://lunchtime.apps.jamiepenney.co.nz", function (err) {
       if (err) {
         grunt.log.fail(err);
       } else {
@@ -111,7 +111,7 @@ module.exports = function (grunt) {
         done();
         return;
       }
-      slack.directMessage('Here\'s your http://lunch.jamiepenney.co.nz token: `' + user.token + '`', user.slack_username, done);
+      slack.directMessage('Here\'s your http://lunchtime.apps.jamiepenney.co.nz token: `' + user.token + '`', user.slack_username, done);
     });
   });
 };
