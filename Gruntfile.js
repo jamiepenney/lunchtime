@@ -52,8 +52,8 @@ module.exports = function (grunt) {
         var vote_id;
         // check largest vote for large majority
         var majority = _.chain(votes).countBy(function (v) { return v.vote; }).pairs().max(function (arr) { return arr[1]; }).value();
-        // More than 2/3rds majority
-        if (majority[1] > (votes.length * 2 / 3)) {
+        // More than 60% majority
+        if (majority[1] > (votes.length * 3 / 5)) {
           var c = _.find(votes, function(v) { return v.vote == majority[0]; });
           choice = { id: c.vote, name: c.choice_name};
           choiceMessage = "by >2/3rds majority";
