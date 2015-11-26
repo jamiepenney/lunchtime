@@ -14,6 +14,10 @@ The Raygun Lunch bot
 For the Slack integration to work, you need to set `slackUrl` to a Slack Webhook URL,
 and `slackRoom` to a room or channel name with a hash in front of it.
 
+## Choosing a winner
+
+Run `grunt chooser` to select a winner from the current votes. The code for this is in `Gruntfile.js`.
+
 ## Choices
 
 The `choice` table has the available choices in it. Each choice is an id
