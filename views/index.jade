@@ -5,7 +5,8 @@ block content
     .module
       .module-body
         .alert.alert-danger Well that didn't work!
-  .module
+
+  .module.module--page-header
     .module-header
       h2 Make your choice
     .module-body
@@ -16,7 +17,22 @@ block content
             span.js-choicename= choice.name
             span.badge.votebadge.js-voteforchoice= choice.votes
     .module-footer
-      h4.module-footer-title= 'Round ' + round + (!winner ? ": Winner drawn at 11am" : "")
+      h4.module-footer__title
+        .split-container
+          div.split--left='Round ' + round + (!winner ? ": Winner drawn at 11am" : "")
+          div.split--right
+            a(href="/stats") Stats
+
+  .module.module--page-footer
+    .module-body
+      .byline
+        ul.inline-list
+          li.inline-list-item
+            | Created by&nbsp;
+            a(href="http://jamiepenney.co.nz") Jamie Penney
+          li.inline-list-item
+            | Project on&nbsp;
+            a(href="https://github.com/jamiepenney/lunchtime") Github
 
   .modal.fade#modal
     .modal-dialog

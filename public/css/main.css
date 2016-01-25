@@ -2,6 +2,7 @@
   font-family: 'Open Sans', sans-serif;
   background: #f0f3f8;
 }
+
 .module {
   background: #fff;
   border: 1px solid #d7e0e9;
@@ -9,9 +10,22 @@
   margin-bottom: 24px;
 }
 
+.module--page-header {
+  margin-top: -2px;
+}
+
+.module--page-footer {
+  margin-bottom: -2px;
+}
+
+.byline {
+  font-weight: 300;
+  font-size: 1.2em;
+}
+
 .module-header {
-  border-bottom: 1px solid #f0f3f8;
-  padding: 0 24px 12px;
+  padding-left: 24px;
+  padding-bottom: 10px;
 }
 
 .module-footer {
@@ -19,8 +33,21 @@
   padding: 0 24px 0;
 }
 
-.module-footer-title {
+.module-footer__title {
   font-weight: 300;
+}
+
+.split-container {
+  clear: both;
+  overflow: hidden;
+}
+
+.split--left{
+  float: left;
+}
+
+.split--right{
+  float: right;
 }
 
 .module-body {
@@ -28,11 +55,23 @@
 }
 
 .module-header + .module-body {
-  margin-top: 10px;
+  border-top: 1px solid #f0f3f8;
+  padding-top: 10px;
 }
 
 .sub-module-split {
   margin: 10px -24px;
+}
+
+.inline-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.inline-list-item {
+  display: inline;
+  padding: 10px 10px 0 0;
 }
 
 .votebadge {
