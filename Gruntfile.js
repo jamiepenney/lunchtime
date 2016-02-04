@@ -63,7 +63,7 @@ module.exports = function (grunt) {
 
           choice = { id: votes[index].vote, name: votes[index].choice_name};
           vote_id = votes[index].id;
-          choiceMessage = "randomly";
+          choiceMessage = "randomly ("+votes[index].name +"'s vote was picked)";
         }
 
         slack.broadcast("The lunch destination has been chosen " + choiceMessage + ": " + choice.name, function (err) {
