@@ -2,7 +2,7 @@
 The Raygun Lunch bot
 
 ## Requirements:
-* Postgres, running on localhost with the default port
+* Postgres 9.5 or later, running on localhost with the default port
 * nodejs
 * a config.js file (example provided in the repo)
 
