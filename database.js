@@ -16,7 +16,7 @@ pg.on('error', function(msg) {
 var getCurrentRound = function(next) {
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
-    
+
     var query = 'select * from "round" where is_current = TRUE order by id desc limit 1';
     client.query({text: query}, function(err, result) {
       next(err, result.rows[0]);
@@ -28,7 +28,7 @@ var getCurrentRound = function(next) {
 var incrementCurrentRound = function (next) {
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
-    var query = 'update round set is_current=FALSE;\n' + 
+    var query = 'update round set is_current=FALSE;\n' +
                 'insert into round(is_current) VALUES(TRUE) returning id;';
     client.query({text: query}, function(err, result){
       next(err, result != null ? result.rows[0] : {});
@@ -79,7 +79,7 @@ var addVote = function (vote, next) {
       if(err) { done(); return next(err); }
       var query = 'insert into vote(round_id, choice_id, user_id)\n'+
                   'values($1, $2, $3) RETURNING *';
-      var values = [round.id, vote.choice_id, vote.user_id];           
+      var values = [round.id, vote.choice_id, vote.user_id];
       client.query({text: query, values: values}, function(err, result){
         next(err, result != null ? result.rows[0] : {});
         done();
@@ -94,7 +94,7 @@ var setWinner = function (winner, next) {
     getCurrentRound(function(err, round){
       if(err) { done(); return next(err); }
       var query = 'update round set winning_vote_id = $1, winning_choice_id = $2 where id = $3';
-      var values = [winner.vote_id, winner.choice_id, round.id];           
+      var values = [winner.vote_id, winner.choice_id, round.id];
       client.query({text: query, values: values}, function(err, result){
         next(err, {});
         done();
@@ -182,13 +182,13 @@ var getStatsForRound = function(round, next){
     client.query({text: getStatsForRoundQuery, values: values}, function(err, result){
       if (err) { done(); return next(err); }
       var stats = result.rows;
-      
+
       getWinnerByRound(round, function(err, winner) {
         if (err) { done(); return next(err); }
         else {
           getFavouriteByRound(round, function(err, favourite){
             if (err) { done(); return next(err); }
-            
+
             var winnerName = winner ? winner.name : "";
             var favName = favourite ? favourite.name : "";
             next(null, {users: stats, round: round, winner: winnerName, popular: favName});
