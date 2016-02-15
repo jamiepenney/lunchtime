@@ -15,7 +15,11 @@ block content
           - var choice = data[i]
           li.list-group-item(data-id=choice.id, class=choice.winner ? "list-group-item-success" : "")
             span.js-choicename= choice.name
-            span.badge.votebadge.js-voteforchoice= choice.votes
+            if !winner
+              button.btn.btn-primary.btn-xs.votebadge.js-voteforchoice vote
+            else
+              span.badge= choice.votes
+
     .module-footer
       h4.module-footer__title
         .split-container

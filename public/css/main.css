@@ -79,7 +79,7 @@
 }
 
 .votebadge {
-  cursor: pointer;
+  float: right;
 }
 
 .stats-label {
