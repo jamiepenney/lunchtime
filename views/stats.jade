@@ -17,10 +17,10 @@ block content
             th # of wins
         tbody
           - for (var index in userWins)
-            - var user = userWins[index]
+            - var userData = userWins[index]
             tr
-              td= user.name
-              td= user.wins
+              td= userData.name
+              td= userData.wins
 
   -for (var roundIndex in rounds)
     - var round = rounds[roundIndex]
@@ -45,9 +45,8 @@ block content
               th
           tbody
             - for (var userIndex in round.users)
-              - var user = round.users[userIndex]
-              tr(class=user.vote_winner ? "success" : "")
-                td= user.name
-                td= user.choice
-                td= user.winner ? 'winner' : ''
-                
+              - var u = round.users[userIndex]
+              tr(class=u.vote_winner ? "success" : "")
+                td= u.name
+                td= u.choice
+                td= u.winner ? 'winner' : ''

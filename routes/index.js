@@ -9,18 +9,23 @@ var config = require('../config.js');
 
 router.get('/', function (req, res) {
   var errorOccurred = !!req.query.error;
+  var token = req.signedCookies.token;
 
-  db.getCurrentRound(function(err, currentRound) {
-    db.getVotesByRound(currentRound.id, function(err, votes) {
-      db.getWinner(function(err, winner) {
-        db.getChoicesForRound(currentRound.id, function(err, choices){
-          res.render('index', {
-            title: 'Raygun Lunchtime',
-            data: choices,
-            round: currentRound.id,
-            winner: winner,
-            errorOccurred: errorOccurred,
-            token: req.signedCookies.token
+  db.getUserByToken(token, function(err, user){
+    db.getCurrentRound(function(err, currentRound) {
+      db.getVotesByRound(currentRound.id, function(err, votes) {
+        db.getWinner(function(err, winner) {
+          db.getChoicesForRound(currentRound.id, function(err, choices){
+            res.render('index', {
+              title: 'Raygun Lunchtime',
+              data: choices,
+              round: currentRound.id,
+              winner: winner,
+              errorOccurred: errorOccurred,
+              token: token,
+              user: user,
+              raygunApiKey: config.raygunApiKey
+            });
           });
         });
       });
@@ -30,6 +35,7 @@ router.get('/', function (req, res) {
 
 router.get('/stats', function (req, res) {
   var token = req.signedCookies.token;
+
   db.getUserByToken(token, function(err, user){
     var isAdmin = user != null ? user.is_admin : false;
     db.getCurrentRound(function (err, currentRound) {
@@ -41,7 +47,9 @@ router.get('/stats', function (req, res) {
             title: 'Raygun Lunchtime Stats',
             rounds: results,
             userWins: userWins,
-            error: err
+            error: err,
+            user: user,
+            raygunApiKey: config.raygunApiKey
           });
         });
       });
@@ -58,10 +66,10 @@ router.post('/vote', function (req, res) {
       setTimeout(function () {
         res.status(403).send("Bad user, no donut!").end();
       }, 2000);
-  
+
       return;
     }
-  
+
     db.addVote({ choice_id: voteid, user_id: user.id }, function (err) {
       if (err) {
         setTimeout(function () {
@@ -69,14 +77,14 @@ router.post('/vote', function (req, res) {
         }, 1000);
         return;
       }
-      
+
       // Store the token in the user's cookies for next week
       res.cookie('token', token, { signed: true });
       res.cookie('username', user.name, { signed: true });
       res.redirect('/');
     });
   })
- 
+
 });
 
 module.exports = router;

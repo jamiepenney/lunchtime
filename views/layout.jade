@@ -7,6 +7,10 @@ html
     link(rel='stylesheet', href='/css/main.css')
     meta(name="viewport", content="width=device-width, initial-scale=1")
     script(src='/js/vendor/compiled.js')
+    script(type="text/javascript").
+      !function(a,b,c,d,e,f,g){a.RaygunObject=e,a[e]=a[e]||function(){
+      (a[e].o=a[e].o||[]).push(arguments)},f=b.createElement(c),g=b.getElementsByTagName(c)[0],
+      f.async=1,f.src=d,g.parentNode.insertBefore(f,g)}(window,document,"script","//cdn.raygun.io/raygun4js/raygun.min.js","rg4js");
   body
     .container
       .row
@@ -17,3 +21,16 @@ html
       .row
         .col-md-8.col-md-offset-2
           block content
+    script(type="text/javascript").
+      rg4js('apiKey', '#{raygunApiKey}');
+      rg4js('enablePulse', true);
+      rg4js('enableCrashReporting', true);
+    if user
+      span= JSON.stringify(user)
+      script(type="text/javascript").
+        rg4js('setUser', {
+          identifier: '#{user.id}',
+          isAnonymous: false,
+          firstName: '#{user.name}',
+          fullName: '#{user.name}'
+        });
