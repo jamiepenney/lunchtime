@@ -7,28 +7,8 @@ var config = require('./config');
 module.exports = function (grunt) {
 
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    uglify: {
-      bower: {
-        options: {
-          compress: true
-        },
-        files: {
-          'public/js/vendor/compiled.min.js': 'public/js/vendor/compiled.js'
-        }
-      }
-    },
-    bower_concat: {
-      all: {
-        dest: 'public/js/vendor/compiled.js',
-        cssDest: 'public/css/vendor/compiled.css',
-      }
-    }
+    pkg: grunt.file.readJSON('package.json')
   });
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-bower-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.registerTask('default', ['bower_concat', 'uglify:bower']);
   grunt.registerTask('increment-round', 'Moves to the next round of votes', function () {
     var done = this.async();
     db.incrementCurrentRound(done);
