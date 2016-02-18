@@ -54,10 +54,10 @@ var getVotesByRound = function(round, next) {
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var values = [round];
-    	client.query({text: getVotesByRoundQuery, values: values}, function(err, result){
-		    next(err, result.rows);
+      client.query({text: getVotesByRoundQuery, values: values}, function(err, result){
+        next(err, result.rows);
         done();
-  	});
+    });
   });
 };
 
@@ -65,10 +65,10 @@ var getVotesQuery = fs.readFileSync(path.join(__dirname, 'database/getVotes.sql'
 var getVotes = function (next) {
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
-    	client.query({text: getVotesQuery}, function(err, result){
-		    next(err, result != null ? result.rows : []);
-        done();
-  	});
+    client.query({text: getVotesQuery}, function(err, result){
+      next(err, result != null ? result.rows : []);
+      done();
+    });
   });
 };
 
