@@ -139,6 +139,10 @@ var getWinner = function (next) {
 }
 
 var getUserByToken = function(token, next){
+  if(!token) {
+    next('No token specified', null);
+    return;
+  }
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var query = 'select * from "user" where token = $1 limit 1';
