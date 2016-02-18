@@ -77,8 +77,9 @@ var addVote = function (vote, next) {
     if(err) { done(); return next(err); }
     getCurrentRound(function(err, round){
       if(err) { done(); return next(err); }
-      var query = 'insert into vote(round_id, choice_id, user_id)\n'+
-                  'values($1, $2, $3) RETURNING *';
+      var query = 'insert into vote(round_id, choice_id, user_id) values($1, $2, $3)\n '+
+                  'on conflict on constraint vote_round_id_user_id_key do update set choice_id = $2\n '+
+                  'RETURNING *';
       var values = [round.id, vote.choice_id, vote.user_id];
       client.query({text: query, values: values}, function(err, result){
         next(err, result != null ? result.rows[0] : {});

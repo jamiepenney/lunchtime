@@ -73,7 +73,7 @@ router.post('/vote', function (req, res) {
     db.addVote({ choice_id: voteid, user_id: user.id }, function (err) {
       if (err) {
         setTimeout(function () {
-          res.status(400).send("You can't vote twice!").end();
+          res.status(400).send("Something went wrong with your vote!").end();
         }, 1000);
         return;
       }
