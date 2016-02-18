@@ -13,18 +13,21 @@ router.get('/', function (req, res) {
 
   db.getUserByToken(token, function(err, user){
     db.getCurrentRound(function(err, currentRound) {
-      db.getVotesByRound(currentRound.id, function(err, votes) {
-        db.getWinner(function(err, winner) {
-          db.getChoicesForRound(currentRound.id, function(err, choices){
-            res.render('index', {
-              title: 'Raygun Lunchtime',
-              data: choices,
-              round: currentRound.id,
-              winner: winner,
-              errorOccurred: errorOccurred,
-              token: token,
-              user: user,
-              raygunApiKey: config.raygunApiKey
+      db.hasVotedInRound(user, currentRound.id, function(err, hasVoted){
+        db.getVotesByRound(currentRound.id, function(err, votes) {
+          db.getWinner(function(err, winner) {
+            db.getChoicesForRound(currentRound.id, function(err, choices){
+              res.render('index', {
+                title: 'Raygun Lunchtime',
+                data: choices,
+                round: currentRound.id,
+                winner: winner,
+                errorOccurred: errorOccurred,
+                token: token,
+                user: user,
+                userHasVoted: hasVoted,
+                raygunApiKey: config.raygunApiKey
+              });
             });
           });
         });

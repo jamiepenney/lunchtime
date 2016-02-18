@@ -2,9 +2,10 @@
 
 block content
   if errorOccurred
-    .module
-      .module-body
-        .alert.alert-danger Well that didn't work!
+    .alert.alert-danger Well that didn't work!
+
+  if userHasVoted
+    .alert.alert-success Thanks for voting this week!
 
   .module.module--page-header
     .module-header

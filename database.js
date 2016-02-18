@@ -72,6 +72,21 @@ var getVotes = function (next) {
   });
 };
 
+var hasVotedInRound = function(user, roundId, next) {
+  if(!user) {
+    next(null, false);
+    return;
+  }
+  pg.connect(cfg, function(err, client, done) {
+    if(err) { done(); return next(err); }
+    var hasVotedQuery = 'select count(1) from "vote" where user_id = $1 and round_id = $2';
+    client.query({text: hasVotedQuery, values: [user.id, roundId]}, function(err, result){
+      next(err, result != null ? result.rows[0].count > 0 : false);
+      done();
+    });
+  });
+}
+
 var addVote = function (vote, next) {
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
@@ -230,5 +245,6 @@ module.exports = {
   getWinner: getWinner,
   getWinnerByRound: getWinnerByRound,
   getCurrentRound: getCurrentRound,
-  incrementCurrentRound: incrementCurrentRound
+  incrementCurrentRound: incrementCurrentRound,
+  hasVotedInRound: hasVotedInRound
 }
