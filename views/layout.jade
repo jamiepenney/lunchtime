@@ -26,7 +26,6 @@ html
       rg4js('enablePulse', true);
       rg4js('enableCrashReporting', true);
     if user
-      span= JSON.stringify(user)
       script(type="text/javascript").
         rg4js('setUser', {
           identifier: '#{user.id}',
