@@ -237,6 +237,7 @@ module.exports = {
   getChoice: getChoice,
   getWinsForEachUser: getWinsForEachUser,
   getUserByToken: getUserByToken,
+  getUserByName: getUserByName,
   getChoicesForRound: getChoicesForRound,
   getVotes: getVotes,
   getVotesByRound: getVotesByRound,
