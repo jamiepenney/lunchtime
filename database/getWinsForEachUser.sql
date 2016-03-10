@@ -5,4 +5,5 @@ left outer join
 	join round r on v.round_id = r.id
 	where r.winning_choice_id = v.choice_id
 )as v on v.user_id = u.id
+where u.archived = false
 group by u.id order by wins desc;
