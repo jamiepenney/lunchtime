@@ -74,14 +74,14 @@ var getVotes = function (next) {
 
 var hasVotedInRound = function(user, roundId, next) {
   if(!user) {
-    next(null, false);
+    next(null, undefined);
     return;
   }
   pg.connect(cfg, function(err, client, done) {
     if(err) { done(); return next(err); }
     var hasVotedQuery = 'select choice_id from "vote" where user_id = $1 and round_id = $2';
     client.query({text: hasVotedQuery, values: [user.id, roundId]}, function(err, result){
-      next(err, result != null ? result.rows[0] : undefined);
+      next(err, result && result.rows[0] ? result.rows[0].choice_id : undefined);
       done();
     });
   });
