@@ -17,7 +17,10 @@ block content
           li.list-group-item(data-id=choice.id, class=choice.winner ? "list-group-item-success" : "")
             span.js-choicename= choice.name
             if !winner
-              button.btn.btn-primary.btn-xs.votebadge.js-voteforchoice vote
+              if choice.id === usersChoiceId
+                button.btn.btn-success.btn-xs.votebadge voted!
+              else
+                button.btn.btn-primary.btn-xs.votebadge.js-voteforchoice vote
             else
               span.badge= choice.votes
 

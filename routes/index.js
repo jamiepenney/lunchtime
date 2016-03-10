@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
 
   db.getUserByToken(token, function(err, user){
     db.getCurrentRound(function(err, currentRound) {
-      db.hasVotedInRound(user, currentRound.id, function(err, hasVoted){
+      db.hasVotedInRound(user, currentRound.id, function(err, usersChoiceId){
         db.getVotesByRound(currentRound.id, function(err, votes) {
           db.getWinner(function(err, winner) {
             db.getChoicesForRound(currentRound.id, function(err, choices){
@@ -25,7 +25,8 @@ router.get('/', function (req, res) {
                 errorOccurred: errorOccurred,
                 token: token,
                 user: user,
-                userHasVoted: hasVoted,
+                userHasVoted: usersChoiceId !== undefined,
+                usersChoiceId: usersChoiceId,
                 raygunApiKey: config.raygunApiKey
               });
             });
