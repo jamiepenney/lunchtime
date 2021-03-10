@@ -1,5 +1,5 @@
 # lunchtime
-The Raygun Lunch bot
+The Lunch choosing bot
 
 ## Requirements:
 * Postgres 9.5 or later, running on localhost with the default port
